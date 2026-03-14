@@ -13,6 +13,9 @@ class TransactionHistoryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final isMobile = size.width < 900;
+
     return BlocBuilder<TransactionBloc, TransactionState>(
       builder: (context, state) {
         if (state is TransactionLoading || state is TransactionInitial) {
@@ -39,42 +42,78 @@ class TransactionHistoryScreen extends StatelessWidget {
           final balanceNeto = totalAbonos - totalRetiros;
 
           return SingleChildScrollView(
-            padding: const EdgeInsets.all(32.0),
+            padding: EdgeInsets.all(isMobile ? 16.0 : 32.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const TransactionHeader(),
-                const SizedBox(height: 32),
-                TransactionTable(transactions: transactions),
-                const SizedBox(height: 32),
-                Row(
-                  children: [
-                    Expanded(
-                      child: SummaryCard(
+                SizedBox(height: isMobile ? 24 : 32),
+
+                isMobile
+                    ? SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: SizedBox(
+                          width: 800,
+                          child: TransactionTable(transactions: transactions),
+                        ),
+                      )
+                    : TransactionTable(transactions: transactions),
+
+                SizedBox(height: isMobile ? 24 : 32),
+
+                if (isMobile)
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      SummaryCard(
                         title: 'BALANCE NETO',
                         amount: balanceNeto,
                         subtitle: 'Este período (30 días)',
                         isPrimary: true,
                       ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: SummaryCard(
+                      const SizedBox(height: 16),
+                      SummaryCard(
                         title: 'TOTAL ABONOS',
                         amount: totalAbonos,
                         indicatorColor: AppColors.success,
                       ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: SummaryCard(
+                      const SizedBox(height: 16),
+                      SummaryCard(
                         title: 'TOTAL RETIROS',
                         amount: totalRetiros,
                         indicatorColor: AppColors.error,
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  )
+                else
+                  Row(
+                    children: [
+                      Expanded(
+                        child: SummaryCard(
+                          title: 'BALANCE NETO',
+                          amount: balanceNeto,
+                          subtitle: 'Este período (30 días)',
+                          isPrimary: true,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: SummaryCard(
+                          title: 'TOTAL ABONOS',
+                          amount: totalAbonos,
+                          indicatorColor: AppColors.success,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: SummaryCard(
+                          title: 'TOTAL RETIROS',
+                          amount: totalRetiros,
+                          indicatorColor: AppColors.error,
+                        ),
+                      ),
+                    ],
+                  ),
               ],
             ),
           );

@@ -153,8 +153,9 @@ class _SubscriptionDialogState extends State<SubscriptionDialog> {
                             return 'Ingrese un monto válido';
                           }
                           final amount = double.tryParse(value);
-                          if (amount == null)
+                          if (amount == null) {
                             return 'Formato numérico inválido';
+                          }
                           if (amount < widget.fund.minimumAmount) {
                             return 'El monto no cumple el mínimo exigido';
                           }

@@ -27,6 +27,9 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final isMobile = size.width < 900;
+
     return BlocListener<FundBloc, FundState>(
       listener: (context, state) {
         if (state is FundOperationSuccess) {
@@ -55,132 +58,159 @@ class HomeScreen extends StatelessWidget {
           context.read<TransactionBloc>().add(LoadTransactions());
         },
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(32.0),
+          padding: EdgeInsets.all(isMobile ? 16.0 : 32.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Fideicomisos y Fondos BTG',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w900,
-                      color: AppColors.slate900,
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      Container(
-                        width: 250,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: AppColors.slate100,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: AppColors.slate300),
-                        ),
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.search,
-                              size: 20,
-                              color: AppColors.slate400,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'Buscar fondos...',
-                              style: TextStyle(
-                                color: AppColors.slate500,
-                                fontSize: 13,
-                              ),
-                            ),
-                          ],
-                        ),
+              if (isMobile)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Fideicomisos y Fondos BTG',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w900,
+                        color: AppColors.slate900,
                       ),
-                      const SizedBox(width: 24),
-                      Stack(
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(child: _buildSearchBar()),
+                        const SizedBox(width: 8),
+                        _buildNotifications(),
+                        const SizedBox(width: 8),
+                        const Icon(
+                          Icons.settings_outlined,
+                          color: AppColors.slate600,
+                          size: 24,
+                        ),
+                      ],
+                    ),
+                  ],
+                )
+              else
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Fideicomisos y Fondos BTG',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w900,
+                        color: AppColors.slate900,
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        _buildSearchBar(),
+                        const SizedBox(width: 24),
+                        _buildNotifications(),
+                        const SizedBox(width: 24),
+                        const Icon(
+                          Icons.settings_outlined,
+                          color: AppColors.slate600,
+                          size: 28,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              SizedBox(height: isMobile ? 24 : 32),
+
+              if (isMobile)
+                const Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    BalanceCard(),
+                    SizedBox(height: 16),
+                    AccountSummaryCard(),
+                  ],
+                )
+              else
+                const Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(flex: 2, child: BalanceCard()),
+                    SizedBox(width: 24),
+                    Expanded(flex: 1, child: AccountSummaryCard()),
+                  ],
+                ),
+
+              SizedBox(height: isMobile ? 32 : 48),
+
+              if (isMobile)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Fondos Disponibles',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w900,
+                        color: AppColors.slate900,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Explore nuestras opciones de inversión curadas',
+                      style: TextStyle(color: AppColors.slate500, fontSize: 14),
+                    ),
+                    const SizedBox(height: 16),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: const Row(
                         children: [
-                          Icon(
-                            Icons.notifications_none,
-                            color: AppColors.slate600,
-                            size: 28,
-                          ),
-                          Positioned(
-                            right: 2,
-                            top: 2,
-                            child: Container(
-                              width: 8,
-                              height: 8,
-                              decoration: const BoxDecoration(
-                                color: AppColors.secondary,
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                          ),
+                          _FilterChip(label: 'Todos', isSelected: true),
+                          SizedBox(width: 8),
+                          _FilterChip(label: 'FPV'),
+                          SizedBox(width: 8),
+                          _FilterChip(label: 'FIC'),
                         ],
                       ),
-                      const SizedBox(width: 24),
-                      Icon(
-                        Icons.settings_outlined,
-                        color: AppColors.slate600,
-                        size: 28,
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              const SizedBox(height: 32),
-
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Expanded(flex: 2, child: BalanceCard()),
-                  const SizedBox(width: 24),
-                  const Expanded(flex: 1, child: AccountSummaryCard()),
-                ],
-              ),
-
-              const SizedBox(height: 48),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Fondos Disponibles',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.w900,
-                          color: AppColors.slate900,
+                    ),
+                  ],
+                )
+              else
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    const Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Fondos Disponibles',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.w900,
+                            color: AppColors.slate900,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Explore nuestras opciones de inversión curadas',
-                        style: TextStyle(
-                          color: AppColors.slate500,
-                          fontSize: 14,
+                        SizedBox(height: 8),
+                        Text(
+                          'Explore nuestras opciones de inversión curadas',
+                          style: TextStyle(
+                            color: AppColors.slate500,
+                            fontSize: 14,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      _FilterChip(label: 'Todos', isSelected: true),
-                      const SizedBox(width: 8),
-                      _FilterChip(label: 'FPV'),
-                      const SizedBox(width: 8),
-                      _FilterChip(label: 'FIC'),
-                    ],
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
+                      ],
+                    ),
+                    const Row(
+                      children: [
+                        _FilterChip(label: 'Todos', isSelected: true),
+                        SizedBox(width: 8),
+                        _FilterChip(label: 'FPV'),
+                        SizedBox(width: 8),
+                        _FilterChip(label: 'FIC'),
+                      ],
+                    ),
+                  ],
+                ),
+              SizedBox(height: isMobile ? 16 : 24),
 
               BlocBuilder<FundBloc, FundState>(
                 builder: (context, state) {
@@ -203,13 +233,12 @@ class HomeScreen extends StatelessWidget {
                     return GridView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate:
-                          const SliverGridDelegateWithMaxCrossAxisExtent(
-                            maxCrossAxisExtent: 350,
-                            crossAxisSpacing: 24,
-                            mainAxisSpacing: 24,
-                            mainAxisExtent: 420,
-                          ),
+                      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                        maxCrossAxisExtent: isMobile ? 500 : 350,
+                        crossAxisSpacing: isMobile ? 16 : 24,
+                        mainAxisSpacing: isMobile ? 16 : 24,
+                        mainAxisExtent: 420,
+                      ),
                       itemCount: funds.length,
                       itemBuilder: (context, index) {
                         final fund = funds[index];
@@ -240,6 +269,56 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildSearchBar() {
+    return Container(
+      width: 250,
+      height: 40,
+      decoration: BoxDecoration(
+        color: AppColors.slate100,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: AppColors.slate300),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: const Row(
+        children: [
+          Icon(Icons.search, size: 20, color: AppColors.slate400),
+          SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              'Buscar fondos...',
+              style: TextStyle(color: AppColors.slate500, fontSize: 13),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNotifications() {
+    return Stack(
+      children: [
+        const Icon(
+          Icons.notifications_none,
+          color: AppColors.slate600,
+          size: 28,
+        ),
+        Positioned(
+          right: 2,
+          top: 2,
+          child: Container(
+            width: 8,
+            height: 8,
+            decoration: const BoxDecoration(
+              color: AppColors.secondary,
+              shape: BoxShape.circle,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

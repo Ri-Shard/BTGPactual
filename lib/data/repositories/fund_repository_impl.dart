@@ -1,3 +1,4 @@
+import 'dart:developer';
 import '../../domain/entities/fund.dart';
 import '../../domain/repositories/fund_repository.dart';
 import '../adapters/mock_api_adapter.dart';
@@ -31,12 +32,12 @@ class FundRepositoryImpl implements FundRepository {
   }) async {
     await apiAdapter.subscribe(fundId, amount);
     if (notifyEmail) {
-      print(
+      log(
         'Simulación de Envío Email: Suscrito exitosamente al fondo $fundId',
       );
     }
     if (notifySms) {
-      print('Simulación de Envío SMS: Suscrito exitosamente al fondo $fundId');
+      log('Simulación de Envío SMS: Suscrito exitosamente al fondo $fundId');
     }
   }
 
